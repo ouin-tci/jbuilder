@@ -9,7 +9,7 @@ class <%= controller_class_name %>Controller < ApplicationController
   # GET <%= route_url %>
   # GET <%= route_url %>.json
   def index
-    @<%= plural_table_name %> = <%= orm_class.all(class_name) %>
+    @<%= plural_table_name %> = <%= orm_class.all(class_name) %>.page(params[:page])
   end
 
   # GET <%= route_url %>/1
@@ -21,6 +21,9 @@ class <%= controller_class_name %>Controller < ApplicationController
   # POST <%= route_url %>.json
   def create
     @<%= singular_table_name %> = <%= orm_class.build(class_name, "#{singular_table_name}_params") %>
+    unless @<%= singular_table_name %>.valid? 
+      render json: {status: 'VALIDATION_ERROR', keys: <%= "@#{orm_instance.errors}" %>.keys, errors: <%= "@#{orm_instance.errors}" %>.full_messages}, status: :unprocessable_entity
+    end
 
     if @<%= orm_instance.save %>
       render :show, status: :created, location: <%= "@#{singular_table_name}" %>
@@ -32,6 +35,11 @@ class <%= controller_class_name %>Controller < ApplicationController
   # PATCH/PUT <%= route_url %>/1
   # PATCH/PUT <%= route_url %>/1.json
   def update
+    @<%= singular_table_name %>.attributes = <%="#{singular_table_name}_params"%>
+    unless @<%= singular_table_name %>.valid? 
+      render json: {status: 'VALIDATION_ERROR', keys: <%= "@#{orm_instance.errors}" %>.keys, errors: <%= "@#{orm_instance.errors}" %>.full_messages}, status: :unprocessable_entity
+    end
+
     if @<%= orm_instance.update("#{singular_table_name}_params") %>
       render :show, status: :ok, location: <%= "@#{singular_table_name}" %>
     else
@@ -43,6 +51,7 @@ class <%= controller_class_name %>Controller < ApplicationController
   # DELETE <%= route_url %>/1.json
   def destroy
     @<%= orm_instance.destroy %>
+    render json: {notice: <%= "'#{human_name} was successfully destroyed.'" %>}, status: :ok, location: <%= "@#{singular_table_name}" %>
   end
 
   private
