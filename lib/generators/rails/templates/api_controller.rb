@@ -22,7 +22,7 @@ class <%= controller_class_name %>Controller < ApplicationController
   def create
     @<%= singular_table_name %> = <%= orm_class.build(class_name, "#{singular_table_name}_params") %>
     unless @<%= singular_table_name %>.valid? 
-      render json: {status: 'VALIDATION_ERROR', keys: <%= "@#{orm_instance.errors}" %>.keys, errors: <%= "@#{orm_instance.errors}" %>.full_messages}, status: :unprocessable_entity
+      render json: {code: 'VALIDATION_ERROR', keys: <%= "@#{orm_instance.errors}" %>.keys, errors: <%= "@#{orm_instance.errors}" %>.full_messages}, status: :unprocessable_entity
     end
 
     if @<%= orm_instance.save %>
@@ -37,7 +37,7 @@ class <%= controller_class_name %>Controller < ApplicationController
   def update
     @<%= singular_table_name %>.attributes = <%="#{singular_table_name}_params"%>
     unless @<%= singular_table_name %>.valid? 
-      render json: {status: 'VALIDATION_ERROR', keys: <%= "@#{orm_instance.errors}" %>.keys, errors: <%= "@#{orm_instance.errors}" %>.full_messages}, status: :unprocessable_entity
+      render json: {code: 'VALIDATION_ERROR', keys: <%= "@#{orm_instance.errors}" %>.keys, errors: <%= "@#{orm_instance.errors}" %>.full_messages}, status: :unprocessable_entity
     end
 
     if @<%= orm_instance.update("#{singular_table_name}_params") %>

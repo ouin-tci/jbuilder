@@ -34,12 +34,12 @@ class <%= controller_class_name %>Controller < ApplicationController
     respond_to do |format|
       unless @<%= singular_table_name %>.valid? 
         format.html { render :edit and return }
-        format.json { render json: {status: 'VALIDATION_ERROR', keys: <%= "@#{orm_instance.errors}" %>.keys, errors: <%= "@#{orm_instance.errors}" %>.full_messages}, status: :unprocessable_entity and return}
+        format.json { render json: {code: 'VALIDATION_ERROR', keys: <%= "@#{orm_instance.errors}" %>.keys, errors: <%= "@#{orm_instance.errors}" %>.full_messages}, status: :unprocessable_entity and return}
       end
 
       if @<%= orm_instance.save %>
         format.html { redirect_to @<%= singular_table_name %>, notice: <%= "'#{human_name} was successfully created.'" %> }
-        format.json { render json: {status: 'VALIDATION_ERROR', keys: <%= "@#{orm_instance.errors}" %>.keys, errors: <%= "@#{orm_instance.errors}" %>.full_messages}, status: :unprocessable_entity and return}
+        format.json { render :show, status: :created, location: <%= "@#{singular_table_name}" %> }
       else
         format.html { render :new }
         format.json { render json: <%= "@#{orm_instance.errors}" %>, status: :unprocessable_entity }
@@ -54,7 +54,7 @@ class <%= controller_class_name %>Controller < ApplicationController
       @<%= singular_table_name %>.attributes = <%="#{singular_table_name}_params"%>
       unless @<%= singular_table_name %>.valid? 
         format.html { render :edit and return}
-        format.json { render json: {status: 'VALIDATION_ERROR', keys: <%= "@#{orm_instance.errors}" %>.keys, errors: <%= "@#{orm_instance.errors}" %>.full_messages}, status: :unprocessable_entity and return}
+        format.json { render json: {code: 'VALIDATION_ERROR', keys: <%= "@#{orm_instance.errors}" %>.keys, errors: <%= "@#{orm_instance.errors}" %>.full_messages}, status: :unprocessable_entity and return}
       end
 
       if @<%= orm_instance.update("#{singular_table_name}_params") %>
